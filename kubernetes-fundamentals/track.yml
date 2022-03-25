@@ -1,0 +1,19 @@
+slug: kubernetes-fundamentals
+id: r2rzsq3kc31v
+type: track
+title: Kubernetes fundamentals
+teaser: An introduction to the core concepts of running applications on a kubernetes
+  cluster.
+description: |-
+  Learn the basics of running applications and containers on kubernetes.
+  For a lot of people their first experience with Kubernetes can be daunting. With hundreds of lines of YAML, and even more directives, it can be challenging to know where to start, what is important in these files.
+  OpenShift seeks to simplify the approach to Kubernetes, start with the UI, while learning the cli.
+icon: https://logodix.com/logo/1910931.png
+tags:
+- openshift
+owner: openshift
+developers:
+- liacampb@redhat.com
+private: true
+published: false
+checksum: "1708363319018312042"
