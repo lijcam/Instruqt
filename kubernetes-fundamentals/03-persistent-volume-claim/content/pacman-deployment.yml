@@ -1,0 +1,29 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: pacman
+  labels:
+    app: pacman
+    app.kubernetes.io/component: pacman
+    app.kubernetes.io/instance: pacman
+    app.kubernetes.io/name: pacman
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime: nodejs
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pacman
+  template:
+    metadata:
+      labels:
+        app: pacman
+    spec:
+      containers:
+        - name: pacman
+          image: quay.io/lijcam/pacman:v1
+          ports:
+            - containerPort: 8080
+              protocol: TCP

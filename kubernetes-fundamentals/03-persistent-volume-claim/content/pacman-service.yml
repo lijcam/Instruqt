@@ -1,0 +1,21 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pacman
+  labels:
+    app: pacman
+    app.kubernetes.io/component: pacman
+    app.kubernetes.io/instance: pacman
+    app.kubernetes.io/name: pacman
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime-version: latest
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: pacman

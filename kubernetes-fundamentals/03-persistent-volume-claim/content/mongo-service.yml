@@ -1,0 +1,20 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+    app.kubernetes.io/component: mongo
+    app.kubernetes.io/instance: mongo
+    app.kubernetes.io/name: mongo
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime-version: latest
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo

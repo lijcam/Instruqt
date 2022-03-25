@@ -12,13 +12,17 @@ notes:
 
     This task, is to deploy the Pacman application again, but using Kubernetes objects.
 tabs:
+- title: Terminal
+  type: terminal
+  hostname: crc
+- title: Editor
+  type: code
+  hostname: crc
+  path: /root/project-pacman/
 - title: Web Console
   type: website
   url: https://console-openshift-console.crc-dzk9v-master-0.crc.${_SANDBOX_ID}.instruqt.io
   new_window: true
-- title: Terminal 1
-  type: terminal
-  hostname: crc
 difficulty: basic
 timelimit: 600
 ---

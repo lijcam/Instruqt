@@ -1,0 +1,4 @@
+#!/bin/bash
+
+PROJECT_PATH="/root/project-pacman"
+rm -rf $PROJECT_PATH

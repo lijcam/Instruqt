@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Find the pacman route
+ROUTE=$(oc get -A routes -l app=pacman -o jsonpath='{"https://"}{.items[0].spec.host}{"\n"}')
+
+# Check to see if it returns HTTP/200
+curl -f -LI $ROUTE
