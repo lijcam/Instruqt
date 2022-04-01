@@ -1,0 +1,5 @@
+#!/bin/sh
+
+oc delete project crash-test
+
+exit 0

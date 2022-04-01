@@ -1,0 +1,39 @@
+#!/bin/sh
+
+oc new-project crash-test
+
+cat << EOF | oc apply -n crash-test -f -
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: crash
+  labels:
+    app: crash
+    app.kubernetes.io/component: crash
+    app.kubernetes.io/instance: crash
+    app.kubernetes.io/name: crash
+    app.kubernetes.io/part-of: crash
+    app.openshift.io/runtime: crash
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crash
+  template:
+    metadata:
+      labels:
+        app: crash 
+    spec:
+      containers:
+      - image: quay.io/lijcam/crash:v1
+        name: crash
+        env:
+        - name: LOG_ECHO
+          value: dont-crash
+
+EOF
+
+exit 0
