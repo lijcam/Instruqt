@@ -1,5 +1,5 @@
 #!/bin/sh
 
-ENVIRONMENT_VAR_SET=$(oc get deployment crash -o jsonpath='{.spec.template.spec.containers[?(@.name=="crash")].env[?(@.name=="LOG_ECHO")]}')
+ENVIRONMENT_VAR_SET=$(oc get deployment crash-test -o jsonpath='{.spec.template.spec.containers[?(@.name=="crash-test")].env[?(@.name=="LOG_ECHO")]}')
 
-[[ -z "${ENVIRONMENT_VAR_SET}" ]] && true || false
+[[ -n "${ENVIRONMENT_VAR_SET}" ]] && true || false

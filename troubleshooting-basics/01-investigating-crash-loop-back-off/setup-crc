@@ -3,34 +3,29 @@
 oc new-project crash-test
 
 cat << EOF | oc apply -n crash-test -f -
-
 ---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: crash
+  name: crash-test
   labels:
-    app: crash
-    app.kubernetes.io/component: crash
-    app.kubernetes.io/instance: crash
-    app.kubernetes.io/name: crash
-    app.kubernetes.io/part-of: crash
-    app.openshift.io/runtime: crash
-
+    app: crash-test
+    app.kubernetes.io/component: crash-test
+    app.kubernetes.io/instance: crash-test
+    app.kubernetes.io/name: crash-test
+    app.kubernetes.io/part-of: crash-test
+    app.openshift.io/runtime: crash-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: crash
+      app: crash-test
   template:
     metadata:
       labels:
-        app: crash 
+        app: crash-test 
     spec:
       containers:
       - image: quay.io/lijcam/crash:v1
-        name: crash
-
+        name: crash-test
 EOF
-
-exit 0
