@@ -1,0 +1,119 @@
+#!/bin/sh
+
+oc new-project pacman-app 
+
+cat << EOF | oc apply -n pacman-app -f -
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: pacman
+  labels:
+    app: pacman
+    app.kubernetes.io/component: pacman
+    app.kubernetes.io/instance: pacman
+    app.kubernetes.io/name: pacman
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime: nodejs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pacman
+  template:
+    metadata:
+      labels:
+        app: pacman
+    spec:
+      containers:
+        - name: pacman
+          image: quay.io/lijcam/pacman:v9
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: pacman
+  labels:
+    app: pacman
+    app.kubernetes.io/component: pacman
+    app.kubernetes.io/instance: pacman
+    app.kubernetes.io/name: pacman
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime-version: latest
+spec:
+  path: "/"
+  to:
+    kind: Service
+    name: pacman
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pacman
+  labels:
+    app: pacman
+    app.kubernetes.io/component: pacman
+    app.kubernetes.io/instance: pacman
+    app.kubernetes.io/name: pacman
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime-version: latest
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: pacman
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+    app.kubernetes.io/component: mongo
+    app.kubernetes.io/instance: mongo
+    app.kubernetes.io/name: mongo
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - image: quay.io/lijcam/mongo:v1
+        name: mongo
+        ports:
+          - name: mongo
+            containerPort: 27017
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+    app.kubernetes.io/component: mongo
+    app.kubernetes.io/instance: mongo
+    app.kubernetes.io/name: mongo
+    app.kubernetes.io/part-of: pacman
+    app.openshift.io/runtime-version: latest
+spec:
+  type: ClusterIP
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo
+EOF
+

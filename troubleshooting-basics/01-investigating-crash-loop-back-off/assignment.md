@@ -3,7 +3,7 @@ slug: investigating-crash-loop-back-off
 id: nan4nxzqkbpm
 type: challenge
 title: Why is my container crashing?
-teaser: A core skill in working with Kubernetes is diagnosing containers crash events.
+teaser: Using pod logs, uncover why the container is crashing.
 notes:
 - type: text
   contents: |-
@@ -23,7 +23,7 @@ timelimit: 600
 
 A core skill working with Kubernetes is diagnosing containers crash events.
 
-Complete this track as the `admin` user using the following credentials:
+Complete this exercise as the `admin` user using the following credentials:
 
 * Username:
 ```
@@ -33,9 +33,10 @@ admin
 ```
 admin
 ```
-And switch to the Developer prespective.
 
-You’ve deployed the latest version of the crash-test application to the cluster, but it is crashing on startup.
+Switch to the Developer prespective.
+
+You’ve deployed the latest version of the crash-test application to the cluster, and funnily enough, it is crashing on startup.
 Looking at the topology view of the crash-test project, you’ll find the container’s halo transition from blue, yellow, and finally red.
 Once red, Kubernetes has put the container in `Crash Loop BackOff` state.
 
@@ -45,38 +46,48 @@ Once red, Kubernetes has put the container in `Crash Loop BackOff` state.
   <pre>oc get pods</pre>
 </details>
 
-Click on the deployment to view the state.
+## Click on the deployment.
 
 ![pod show details tab](../assets/pod-show-details-tab.png)
 
 <details><summary>Command line</summary>
-  <pre>oc describe pod \<pod name\></pre>
+  <pre>oc describe pod <em>pod_name</em></pre>
 </details>
 
 From OpenShift 4.10 clicking on `Crash Loop BackOff` will reveal more details of the erroneous state and suggested places to start troubleshooting.
 
 ![pod error flavour](../assets/pod-error-flavour.png)
 
-Containers crash for a variety of reasons. Often, applications inside containers stop if they are missing a key piece of configuration needed to run safely.
-Let’s review the logs.
+Containers can crash for a variety of reasons. Often, applications inside containers stop if they are missing a key piece of configuration needed to run safely.
+
+## Let’s review the logs.
+
+![stack container logs](../assets/stack-container-logs.png)
 
 ![pod logs tab 1](../assets/pod-logs-tab-1.png)
 
 <details><summary>Command line</summary>
-  <pre>oc logs \<pod name\></pre>
+  <pre>oc logs <em>pod_name</em></pre>
 </details>
 
 The error message in the logs suggests that the pod is looking for an environment variable.
-We can check environment variables by clicking on the `Environment` tab.
+We can check environment variables by clicking on the Environment tab.
 
 ![pod environment vars](../assets/pod-environment-vars.png)
 
 Do you see a `LOG_ECHO` environment variable?
 
-—
+—--
+
+## Diagnosis
 
 The deployment is missing the `LOG_ECHO` environment variable.
 Return to the topology screen, and the deployment details.
+
+---
+
+## The fix
+
 From the `Actions` menu, click `Edit Deployment`.
 
 ![edit deployment](../assets/edit-deployment.png)
@@ -94,6 +105,6 @@ Once saved, Kubernetes will act upon the updated deployment and reconcile toward
 ![deployment reconciliation](../assets/deployment-reconciliation.png)
 
 Does the container crash this time?
-We can reconfirm the container by checking the logs.
+We can confirm the container is healthy by checking the container logs.
 
 ![pod logs tab 2](../assets/pod-logs-tab-2.png)

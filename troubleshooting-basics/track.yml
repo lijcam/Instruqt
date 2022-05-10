@@ -1,12 +1,15 @@
 slug: troubleshooting-basics
 id: 5sqazmauu51o
 type: track
-title: Troubleshooting basics
-teaser: A short description of the track.
+title: Kubernetes troubleshooting basics
+teaser: Know where you are in the stack.
 description: |-
-  A long description of the track.
+  The first time your application disappears, crashes, — wait, where did all the nodes go — from your Kubernetes cluster can be over-welling.
+  Key to being able to quickly triage issues is having the knowledge to know where to look first — know where you are in the stack.
 
-  You can use any GitHub flavoured markdown.
+  This lab will help orientate you in a Kubernetes environment and allow you to practice troubleshooting techniques free from production outage risks.
+
+  The challenges feature troubleshooting from the OpenShift console, with option for command line.
 icon: https://storage.googleapis.com/instruqt-frontend/img/tracks/default.png
 tags: []
 owner: openshift
@@ -14,4 +17,4 @@ developers:
 - liacampb@redhat.com
 private: false
 published: false
-checksum: "7415103024235284375"
+checksum: "15655508453930789913"
