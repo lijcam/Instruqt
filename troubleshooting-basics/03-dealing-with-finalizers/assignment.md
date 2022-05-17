@@ -77,7 +77,7 @@ oc describe project/metric-autoscale-test
 There isn’t any more information than what we already know. You can use `get` to pull the current state in `yaml` form.
 
 ```
-oc get -o yaml \
+oc get -o yaml APIService \
   project/metric-autoscale-test
 ```
 
