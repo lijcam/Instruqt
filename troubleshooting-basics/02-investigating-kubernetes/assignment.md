@@ -3,10 +3,14 @@ slug: investigating-kubernetes
 id: dpwu7ljv1byv
 type: challenge
 title: Why hasn't my app started?
-teaser: A short description of the challenge.
+teaser: Dive deep to uncover what prevents the container from starting.
 notes:
 - type: text
-  contents: Replace this text with your own text
+  contents: |-
+    You’ve just deployed the latest updates to the pacman application, but the main application container is taking an inordinate amount of time to start.
+
+    You’ll need to navigate several domains of the stack to identify the root cause, and apply the fix.
+    ![stack container scheduling nodes](../assets/stack-container-scheduling-nodes.png)
 tabs:
 - title: OpenShift Console
   type: website
@@ -16,7 +20,7 @@ tabs:
   type: terminal
   hostname: crc
 difficulty: basic
-timelimit: 2400
+timelimit: 1200
 ---
 You’ve deployed the Pacman application to OpenShift, the database has started but, you notice the main application container is taking longer than usual to start.
 

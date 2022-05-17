@@ -1,0 +1,350 @@
+#!/bin/sh
+
+# Setup challange
+#PROMETHEUS_ADAPTER_IMAGE="$(oc get -n openshift-monitoring deploy/prometheus-adapter -o jsonpath='{..image}')"
+PROMETHEUS_ADAPTER_IMAGE="quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e4c9252f0878ab3c3f0f5faf431b082114b39467643ab51c5de46ad5433c8769"
+echo $PROMETHEUS_ADAPTER_IMAGE
+
+cat << EOF | oc apply -f -
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metric-autoscale-test
+  labels:
+    name: metric-autoscale-test
+    kubernetes.io/metadata.name: metric-autoscale-test
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: pod-autoscale
+  namespace: metric-autoscale-test
+  labels:
+    app: pod-autoscale
+    app.kubernetes.io/component: pod-autoscale
+    app.kubernetes.io/instance: pod-autoscale
+    app.kubernetes.io/name: pod-autoscale
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-autoscale
+  template:
+    metadata:
+      labels:
+        app: pod-autoscale
+    spec:
+      containers:
+      - image: quay.io/gpte-devops-automation/pod-autoscale-lab:rc0
+        name: pod-autoscale
+        ports:
+          - protocol: TCP
+            containerPort: 8080
+        resources:
+          limits:
+            memory: "750Mi"
+            cpu: "100m"
+        requests:
+          memory: "5Mi"
+          cpu: "50m"
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pod-autoscale
+  namespace: metric-autoscale-test
+  labels:
+    app: pod-autoscale
+    app.kubernetes.io/component: pod-autoscale
+    app.kubernetes.io/instance: pod-autoscale
+    app.kubernetes.io/name: pod-autoscale
+
+spec:
+  type: ClusterIP
+  ports:
+    - name: 8080-tcp
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: pod-autoscale
+
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: pod-autoscale
+  namespace: metric-autoscale-test
+  labels:
+    app: pod-autoscale
+    app.kubernetes.io/component: pod-autoscale
+    app.kubernetes.io/instance: pod-autoscale
+    app.kubernetes.io/name: pod-autoscale
+
+spec:
+  path: "/"
+  to:
+    kind: Service
+    name: pod-autoscale
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: metric-autoscale-test
+  namespace: metric-autoscale-test 
+spec:
+  endpoints:
+  - interval: 30s
+    port: 8080-tcp 
+  selector:
+    matchLabels:
+      app: pod-autoscale 
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: custom-metrics-apiserver
+  namespace: metric-autoscale-test
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: custom-metrics-server-resources
+rules:
+- apiGroups:
+  - custom.metrics.k8s.io
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: custom-metrics-resource-reader
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: custom-metrics:system:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- kind: ServiceAccount
+  name: custom-metrics-apiserver
+  namespace: metric-autoscale-test
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: custom-metrics-auth-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+- kind: ServiceAccount
+  name: custom-metrics-apiserver
+  namespace: metric-autoscale-test
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: custom-metrics-resource-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: custom-metrics-resource-reader
+subjects:
+- kind: ServiceAccount
+  name: custom-metrics-apiserver
+  namespace: metric-autoscale-test
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: hpa-controller-custom-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: custom-metrics-server-resources
+subjects:
+- kind: ServiceAccount
+  name: horizontal-pod-autoscaler
+  namespace: kube-system
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adapter-config
+  namespace: metric-autoscale-test
+data:
+  config.yaml: |
+    rules:
+    - seriesQuery: 'http_requests_total {namespace!="",pod!=""}' 
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          pod: {resource: "pod"}
+          service: {resource: "service"}
+      name:
+        matches: "^(.*)_total"
+        as: "my_http_requests" 
+      metricsQuery: 'sum(rate(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: prometheus-adapter-prometheus-config
+  namespace: metric-autoscale-test
+data:
+  prometheus-config.yaml: |
+    apiVersion: v1
+    clusters:
+    - cluster:
+        server: https://prometheus-user-workload.openshift-user-workload-monitoring:9091
+        insecure-skip-tls-verify: true
+      name: prometheus-k8s
+    contexts:
+    - context:
+        cluster: prometheus-k8s
+        user: prometheus-k8s
+      name: prometheus-k8s
+    current-context: prometheus-k8s
+    kind: Config
+    preferences: {}
+    users:
+    - name: prometheus-k8s
+      user:
+        tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.openshift.io/serving-cert-secret-name: prometheus-adapter-tls
+  labels:
+    name: prometheus-adapter
+  name: prometheus-adapter
+  namespace: metric-autoscale-test
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 6443
+  selector:
+    app: prometheus-adapter
+  type: ClusterIP
+
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.custom.metrics.k8s.io
+spec:
+  service:
+    name: prometheus-adapter
+    namespace: metric-autoscale-test
+  group: custom.metrics.k8s.io
+  version: v1beta1
+  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 100
+  versionPriority: 100
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prometheus-adapter
+  name: prometheus-adapter
+  namespace: metric-autoscale-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-adapter
+      name: prometheus-adapter
+    spec:
+      serviceAccountName: custom-metrics-apiserver
+      containers:
+      - name: prometheus-adapter
+        image: ${PROMETHEUS_ADAPTER_IMAGE}
+        args:
+        - --secure-port=6443
+        - --tls-cert-file=/var/run/serving-cert/tls.crt
+        - --tls-private-key-file=/var/run/serving-cert/tls.key
+        - --logtostderr=true
+        - --prometheus-url=http://prometheus-operated.default.svc:9090/
+        - --metrics-relist-interval=1m
+        - --v=4
+        - --config=/etc/adapter/config.yaml
+        ports:
+        - containerPort: 6443
+        volumeMounts:
+        - mountPath: /var/run/serving-cert
+          name: volume-serving-cert
+          readOnly: true
+        - mountPath: /etc/adapter/
+          name: config
+          readOnly: true
+        - mountPath: /tmp
+          name: tmp-vol
+      volumes:
+      - name: volume-serving-cert
+        secret:
+          secretName: prometheus-adapter-tls
+      - name: config
+        configMap:
+          name: adapter-config
+      - name: tmp-vol
+        emptyDir: {}
+
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v1
+metadata:
+  name: pod-autoscale-custom
+  namespace: metric-autoscale-test
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: pod-autoscale
+    apiVersion: apps/v1
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Pods
+      pods:
+        metricName: my_http_requests 
+        targetAverageValue: 500m"
+EOF

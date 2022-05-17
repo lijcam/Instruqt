@@ -3,12 +3,16 @@ slug: investigating-crash-loop-back-off
 id: nan4nxzqkbpm
 type: challenge
 title: Why is my container crashing?
-teaser: Using pod logs, uncover why the container is crashing.
+teaser: Uncover why the container is crashing.
 notes:
 - type: text
   contents: |-
     The latest version of your team's application is crashing.
     The goal of this exercise, using the Openshift console, or command line. Discover why the container fails to start, and resolve the issue.
+
+    You'll concentrate on a single domain of the stack, and learn to triage issues with container startup.
+
+    ![stack container logs](../assets/stack-container-logs.png)
 tabs:
 - title: OpenShift Console
   type: website
@@ -18,21 +22,17 @@ tabs:
   type: terminal
   hostname: crc
 difficulty: basic
-timelimit: 600
+timelimit: 1200
 ---
 
 A core skill working with Kubernetes is diagnosing containers crash events.
 
-Complete this exercise as the `admin` user using the following credentials:
+Complete this exercise using the following credentials:
 
-* Username:
-```
-admin
-```
-* Password:
-```
-admin
-```
+<pre>
+  username: admin
+  password: admin
+</pre>
 
 Switch to the Developer prespective.
 
@@ -77,7 +77,7 @@ We can check environment variables by clicking on the Environment tab.
 
 Do you see a `LOG_ECHO` environment variable?
 
-—--
+---
 
 ## Diagnosis
 
