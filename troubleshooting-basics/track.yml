@@ -10,11 +10,13 @@ description: |-
   This lab will help orientate you in a Kubernetes environment and allow you to practice troubleshooting techniques free from production outage risks.
 
   The challenges feature troubleshooting from the OpenShift console, with option for command line.
-icon: https://storage.googleapis.com/instruqt-frontend/img/tracks/default.png
-tags: []
+icon: https://logodix.com/logo/1910931.png
+level: beginner
+tags:
+- ""
 owner: openshift
 developers:
 - liacampb@redhat.com
 private: false
 published: false
-checksum: "11969515491014762018"
+checksum: "1115007340341172697"
