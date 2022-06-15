@@ -8,7 +8,7 @@ export KUBECONFIG=/opt/kubeconfig
 # currently overwrite hostname with an hard-coded value
 # that will be used in the assignment.md
 # fix that once assignment.md can get access to $HOSTNAME, with a succesfull instruqt track push.
-export HOSTNAME="happy"
+export HOSTNAME="ocp"
 
 ENS4IP=$(ip -4 -o addr show ens4 | awk '{print $4}' | cut -d "/" -f 1)
 
