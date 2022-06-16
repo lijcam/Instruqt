@@ -17,6 +17,7 @@ tags:
 owner: openshift
 developers:
 - liacampb@redhat.com
+- cschmitz@redhat.com
 private: false
 published: false
-checksum: "1115007340341172697"
+checksum: "7131384106559680692"
