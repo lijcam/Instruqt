@@ -10,9 +10,9 @@ notes:
   contents: |-
     The container-based deployment of the Pacman application worked better than expected, and performance testing completed without issue.
 
-    Another test is happening this weekend, and the delivery team has taken your learnings from the last exercise, and distilled them as [Kubernetes API objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects).
+    Another test is happening this weekend, and the delivery team has taken your learnings from the last exercise, and distilled them as [Kubernetes API objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects). Kubernetes Objects are persistent entities in the Kubernetes system. Kubernetes uses these entities to represent the state of a cluster. A Kubernetes Object is a "record of intent"—once you create the Object, Kubernetes will constantly work to ensure that object exists. We use YAML notation to describe Kubernetes Objects, and are the foundation of Infrastructure as Code practices in Kubernetes.
 
-    This task, is to deploy the Pacman application again, but using Kubernetes objects.
+    This task, is to deploy the Pacman application again, but using Kubernetes Objects.
 tabs:
 - title: Terminal
   type: terminal
@@ -43,7 +43,7 @@ There are several [recommended labels](https://kubernetes.io/docs/concepts/overv
 
 ## Deploy the database
 
-Create the Project, Mongo Deployment and Service.
+Return to the Terminal Tab and Create the Project, Mongo Deployment and Service.
 
 ```
 oc new-project team-pacman
@@ -66,7 +66,7 @@ oc apply -f mongo-service.yml
   username: admin
   password: admin
 </pre>
-You may need to logout from the OpenShift console from the previous exercise.
+You may need to log out from the OpenShift console from the previous exercise.
 </details>
 
 Enter the Developer perspective, and enter the Topology view. Switch to Project `team-pacman`.
@@ -110,7 +110,9 @@ What if we want to see all the routes out of our Kubernetes Cluster? We can incl
 oc get -A routes
 ```
 
-What if we don't know what project something is in? We can use a label selector to find it.
+We only have a small cluster with a handful of routes. What if we had a larger cluster, with countless applications? What if we don't know what project something is in? We can use a label selector to find it.
+
+If we look at the `pacman-route.yaml` Kubernetes Object in the Editor Tab, we can pick one of the labels and ask Kubernetes which route has the corresponding label.
 
 ```
 oc get -A routes -l app=pacman

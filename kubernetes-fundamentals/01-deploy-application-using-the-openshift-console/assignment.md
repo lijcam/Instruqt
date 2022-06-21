@@ -50,11 +50,20 @@ You now have all the information you need to deploy the Pacman application.
 </pre>
 </details>
 
+
+When you first log in to OpenShift, you will be in the Administrators. Explore the interface to find the perspective toggle and switch to the Developer perspective.
+
+<details><summary>Can't find it? Here's a hint.</summary>
+
+![perspective-toggle](../assets/perspective-toggle.png)
+
+</details>
+
 ## Create the project
 
 Projects are a way for teams to organise their applications and content in isolation from other teams.
 
-Create a new project by clicking on `Create a new project`.
+From the Developer perspective create a new project by clicking on `Create a new project`.
 Name the project `team-pacman`.
 
 ![New Project](../assets/create-new-project.png)

@@ -9,7 +9,7 @@ notes:
   contents: |-
     Your team is getting closer to go live! The last feature is to implement high scores in the Pacman application.
 
-    Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node. Any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attached a Persistent Volume Claim to our containers.
+    Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node, any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attached a Persistent Volume Claim to our containers.
 
     This task, is to attach a Persistent Volume Claim to our Mongo Database, so our high score can live on into eternity!
 tabs:
@@ -29,7 +29,7 @@ timelimit: 1200
 ---
 This exercise builds on what we learned from the previous exercise. The goal, to attach storage into our mongo pod to keep our high scores!
 
-Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node. Any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attached a Persistent Volume Claim to our containers.
+Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node, any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attached a Persistent Volume Claim to our containers.
 
 Create a new project.
 
@@ -37,25 +37,35 @@ Create a new project.
 oc new-project team-pacman
 ```
 
+Locate our Kubernetes Objects.
+
+```
+cd /root/team-pacman
+```
+
 Use the Editor Tab to see the Persistent Volume Claim Kubernetes Object.
+
 ```
 oc apply -f mongo-pvc.yml
 ```
 
 We can view the status of the Persistent Volume Claim in the console in the Administrator view: Storage > PersistentVolumeClaims
 
+![persistent-volume-claims](../assets/persistent-volume-claims.png)
+
 ## Modify the database deployment
 
-Modify our Pod Template for the database to include the volume, and a volumeMount for the container. [An example can be found in offical documentation](https://docs.openshift.com/container-platform/4.9/storage/understanding-persistent-storage.html#pvc-claims-as-volumes_understanding-persistent-storage) but make sure you set the following parameters correctly.
+Modify our Pod Template for the database to include the `volume`, and a `volumeMount` for the container. [An example can be found in offical documentation](https://docs.openshift.com/container-platform/4.9/storage/understanding-persistent-storage.html#pvc-claims-as-volumes_understanding-persistent-storage) but make sure you set the following parameters correctly.
 
 The file we need to modify is `mongo-deployment.yml`
 
-1. In the container, volumeMounts section, the `mountPath` must be `/data/db/`
-2. In the volume section, `claimName` must match the name of the Persistent Volume Claim.
+1. In the container, `volumeMounts` section, the `mountPath` must be `/data/db`
+2. In the volume section, `claimName` must match the name of the Persistent Volume Claim, i.e., the name in the `mongo-pvc.yaml` file.
 
+Save your changes.
 ## Deploy the database
 
-Create the mongo Deployment, and Service.
+Return to the Terminal Tab, Create the mongo Deployment, and Service.
 
 ```
 oc apply -f mongo-deployment.yml
@@ -63,6 +73,13 @@ oc apply -f mongo-deployment.yml
 
 ```
 oc apply -f mongo-service.yml
+```
+
+Validate our Pod has mounted the Persistent Volume claim.
+In the Pod Template, you should see the mount in the Volumes section.
+
+```
+oc describe deployment mongo
 ```
 
 ## Deploy the Pacman application
@@ -80,3 +97,7 @@ oc apply -f pacman-service.yml
 ```
 oc apply -f pacman-route.yml
 ```
+
+Return to the Openshift console to access Pacman and set yourself the high score!
+
+![pacman](../assets/pacman.png)
