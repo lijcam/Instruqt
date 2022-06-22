@@ -2,24 +2,29 @@
 
 # Challenge setup
 
-PROJECT_PATH="/root/project-pacman"
+PROJECT_PATH="/root/team-pacman"
 mkdir -p $PROJECT_PATH
 
 curl -o $PROJECT_PATH/mongo-deployment.yml \
-  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/02-deploy-application-using-kubernetes-objects/content/mongo-deployment.yml"
+  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/03-persistent-volume-claim/content/mongo-deployment.yml"
 
 
 curl -o $PROJECT_PATH/mongo-service.yml \
-  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/02-deploy-application-using-kubernetes-objects/content/mongo-service.yml"
+  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/03-persistent-volume-claim/content/mongo-service.yml"
+
+
+curl -o $PROJECT_PATH/mongo-pvc.yml \
+  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/03-persistent-volume-claim/content/mongo-pvc.yml"
 
 
 curl -o $PROJECT_PATH/pacman-deployment.yml \
-  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/02-deploy-application-using-kubernetes-objects/content/pacman-deployment.yml"
+  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/03-persistent-volume-claim/content/pacman-deployment.yml"
 
 
 curl -o $PROJECT_PATH/pacman-route.yml \
-  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/02-deploy-application-using-kubernetes-objects/content/pacman-route.yml"
+  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/03-persistent-volume-claim/content/pacman-route.yml"
 
 
 curl -o $PROJECT_PATH/pacman-service.yml \
-  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/02-deploy-application-using-kubernetes-objects/content/pacman-service.yml"
+  "https://raw.githubusercontent.com/lijcam/Instruqt/main/kubernetes-fundamentals/03-persistent-volume-claim/content/pacman-service.yml"
+

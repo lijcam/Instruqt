@@ -1,6 +1,3 @@
 #!/bin/bash
 
-PROJECT_PATH="/root/team-pacman"
-rm -rf $PROJECT_PATH
-
 oc delete namespace team-pacman --wait=true

@@ -2,7 +2,7 @@
 
 # Challenge setup
 
-PROJECT_PATH="/root/project-pacman"
+PROJECT_PATH="/root/team-pacman"
 mkdir -p $PROJECT_PATH
 
 curl -o $PROJECT_PATH/mongo-deployment.yml \

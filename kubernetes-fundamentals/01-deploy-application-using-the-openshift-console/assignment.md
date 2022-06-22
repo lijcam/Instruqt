@@ -3,6 +3,7 @@ slug: deploy-application-using-the-openshift-console
 id: mf4nzyvwuhx7
 type: challenge
 title: Deploy applications using the OpenShift console.
+teaser: Lets play Pacman in 5 minutes or less using the OpenShift console.
 notes:
 - type: text
   contents: |-
@@ -36,28 +37,34 @@ tabs:
   type: terminal
   hostname: crc
 difficulty: basic
-timelimit: 600
+timelimit: 1200
 ---
 Another email comes through with details of the OpenShift cluster, and location of the container images.
 The email also included specifics of how the containers should be deployed.
 You now have all the information you need to deploy the Pacman application.
 
-Lets login as the `developer` account using the following credentials:
+<details><summary>If you're not already logged in, use these credentials.</summary>
+<pre>
+  username: admin
+  password: admin
+</pre>
+</details>
 
-* Username:
-```
-developer
-```
-* Password:
-```
-developer
-```
+
+When you first log in to OpenShift, you will be in the Administrators. Explore the interface to find the perspective toggle and switch to the Developer perspective.
+
+<details><summary>Can't find it? Here's a hint.</summary>
+
+![perspective-toggle](../assets/perspective-toggle.png)
+
+</details>
 
 ## Create the project
 
 Projects are a way for teams to organise their applications and content in isolation from other teams.
 
-Create a new project by clicking on `Create a new project`.
+From the Developer perspective create a new project by clicking on `Create a new project`.
+Name the project `team-pacman`.
 
 ![New Project](../assets/create-new-project.png)
 
