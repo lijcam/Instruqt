@@ -9,7 +9,7 @@ notes:
   contents: |-
     Your team is getting closer to go live! The last feature is to implement high scores in the Pacman application.
 
-    Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node, any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attached a Persistent Volume Claim to our containers.
+    Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node, any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attaching a Persistent Volume Claim to our containers.
 
     This task, is to attach a Persistent Volume Claim to our Mongo Database, so our high score can live on into eternity!
 tabs:
@@ -29,75 +29,122 @@ timelimit: 1200
 ---
 This exercise builds on what we learned from the previous exercise. The goal, to attach storage into our mongo pod to keep our high scores!
 
-Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node, any data it was processing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attached a Persistent Volume Claim to our containers.
+Containers are stateless in nature. If our container fails, is redeployed, or rescheduled to another node, any data it is storing will be lost. In Kubernetes, we use Persistent Volumes to overcome this, by attaching a Persistent Volume Claim to our containers.
 
-Create a new project.
+The OpenShift project and resources have already been created for you:
+
+- team-pacman project
+- mongo deployment
+- mongo service
+- pacman deployment
+- pacman service
+- pacman route
+
+If you open the console, you should see all those resources. Make sure to use the `Developer` perspective,
+pick the Project `team-pacman` if needed, and look at the `Topology`.
+
+![deploy-mongo-pacman](../assets/deploy-mongo-pacman.png)
+
+This deployment is not yet using persistent volumes, so your high score won't be safe if the mongo pod get restarted.
+Go ahead and try. Remember that one way to open the URL of a route is via the Topology ![Pacman route](../assets/launch-route.png)
+1. Play a pacman game and hit a high score.
+2. Restart the mongo pod. You might scale down to zero and back to one the mongo Deployment, **or** you can navigate to the pod details
+and click on `Action` -> `Delete Pod`, in which case the deployment will automatically recreate a new one.
+3. Go back to pacman and display the high score leaderboard. It's all gone.
+
+Now, let's add some persistence!
+## Create your Persistent Volume Claim
+You can create your PVC via the Command Line Interface, or the web console GUI.
+
+Pick and follow **one** of the two set of instructions:
+<details><summary>CLI instructions</summary>
+The PersistentVolumeClaim yaml resource file is already available and ready for you to apply. Check it's content, and apply it:
 
 ```
-oc new-project team-pacman
+cat /root/team-pacman/mongo-pvc.yml
 ```
-
-Locate our Kubernetes Objects.
-
 ```
-cd /root/team-pacman
+oc apply -f /root/team-pacman/mongo-pvc.yml
 ```
+</details>
 
-Use the Editor Tab to see the Persistent Volume Claim Kubernetes Object.
+<details><summary>GUI instructions (recommended)</summary>
 
-```
-oc apply -f mongo-pvc.yml
-```
+To create this Persistent Volume Claim, we are going to use the console. Start by switching to the `Administrator` perspective if needed,
+and navigate to `Storage`->`PersistentVolumeClaims` and click on `Create PersistentVolumeClaim`.
 
-We can view the status of the Persistent Volume Claim in the console in the Administrator view: Storage > PersistentVolumeClaims
+| Configuration              | Parameter           |
+|----------------------------|---------------------|
+| PersistentVolumeClaim name | `mongo-storage`     |
+| Access mode<sup>(1)</sup>  | `Single User (RWO)` |
+| Size                       | `8 GiB`             |
+| Use label selectors...     | `untick`            |
+| Volume mode                | `Filesystem`        |
+
+<sup>(1)</sup> You can learn more about access modes (RWO, RWX, ROX) here:
+https://docs.openshift.com/container-platform/4.10/storage/understanding-persistent-storage.html#pv-access-modes_understanding-persistent-storage
+
+![Create PVC](../assets/create-pvc.png)
+
+</details>
+
+After creating your PVC, you should see it in the console from the `Administrator` perspective: `Storage` -> `PersistentVolumeClaims`. Note that the Capacity displayed is
+the one of the Persistent Volume. The PVC claim has a `Requested capacity` of 8GiB, as can be seen when clicking on the mongo-storage PVC
 
 ![persistent-volume-claims](../assets/persistent-volume-claims.png)
 
-## Modify the database deployment
+Next, let's mount this PVC to your mongo deployment
 
-Modify our Pod Template for the database to include the `volume`, and a `volumeMount` for the container. [An example can be found in offical documentation](https://docs.openshift.com/container-platform/4.9/storage/understanding-persistent-storage.html#pvc-claims-as-volumes_understanding-persistent-storage) but make sure you set the following parameters correctly.
+## Mount your PVC.
 
-The file we need to modify is `mongo-deployment.yml`
+You can mount your PVC via the Command Line Interface, or the web console GUI.
 
-1. In the container, `volumeMounts` section, the `mountPath` must be `/data/db`
-2. In the volume section, `claimName` must match the name of the Persistent Volume Claim, i.e., the name in the `mongo-pvc.yaml` file.
+Pick and follow **one** of the two set of instructions:
 
-Save your changes.
-## Deploy the database
+<details><summary>CLI instructions</summary>
 
-Return to the Terminal Tab, Create the mongo Deployment, and Service.
+Your OpenShift mongo deployment was created from the `/root/pacman-team/mongo-deployment.yaml` file.
+We are going to modify this file, and update the deployment.
 
-```
-oc apply -f mongo-deployment.yml
-```
+Edit the `/root/pacman-team/mongo-deployment.yaml` file to add a `volume`, and a `volumeMount` for the pod. Check
+how this is done from this [example that can be found in offical documentation](https://docs.openshift.com/container-platform/4.9/storage/understanding-persistent-storage.html#pvc-claims-as-volumes_understanding-persistent-storage)
+but make sure you set the following parameters correctly:
+1. The `claimName` should be the one of the PVC created earlier, which is `mongo-storage`
+2. The `mountPath` should be set to `/bitnami/mongodb` as this the location where this mongo container stores it's data.
 
-```
-oc apply -f mongo-service.yml
-```
+Once you have done the required modifications, you can  re-apply the mongo Deployment with:
 
-Validate our Pod has mounted the Persistent Volume claim.
-In the Pod Template, you should see the mount in the Volumes section.
-
-```
-oc describe deployment mongo
+```shell
+oc apply -f /root/pacman-team/mongo-deployment.yaml
 ```
 
-## Deploy the Pacman application
+</details>
 
-Use the existing Pacman Kubernetes Objects to deploy the Pacman app.
+<details><summary>GUI instructions (recommended)</summary>
 
-```
-oc apply -f pacman-deployment.yml
-```
+If needed, switch to the `Developer` perspective, make sure the current project is `team-pacman`, navigate to `Topology`, and display your mongo Deployment.
+From here, you should be able to click on the `Actions` dropdown menu and select `Add storage`.
 
-```
-oc apply -f pacman-service.yml
-```
+![add-storage](../assets/add-storage.png)
 
-```
-oc apply -f pacman-route.yml
-```
+The MongoDB docker image used here expect an external volume mounted in /bitnami/mongodb when persistence is required.
+Configure your added storage as follow:
 
-Return to the Openshift console to access Pacman and set yourself the high score!
+| Configuration          | Parameter          |
+|------------------------|--------------------|
+| Use existing claim     | `mongo-storage`    |
+| Mount path             | `/bitnami/mongodb` |
+| Mount as read-only     | `untick`           |
+
+Click `Save`
+
+![add-configure-storage](../assets/add-configure-storage.png)
+
+Your deployment will automatically redeploy a fresh new mongodb pod with this volume attached.
+</details>
+
+Congratulation, you just enabled data persistence! Return to the Openshift console to access Pacman and set yourself the high score. Check
+that even after deleting the mongo pod, the new one automatically created will mount the PVC and display your high
+score correctly.
 
 ![pacman](../assets/pacman.png)

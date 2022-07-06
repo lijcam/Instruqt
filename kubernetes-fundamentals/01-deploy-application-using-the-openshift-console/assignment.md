@@ -11,7 +11,6 @@ notes:
     One final sweep of the inbox before knock off, a last-minute request comes from one of the application teams.
 
       > **From:** pacman-development-team \
-      > **Sent:** Friday, 18 of March 2022 4:37 PM \
       > **To:** deployment-engineering \
       > **Subject:** Urgent deployment - Pacman app
 
@@ -80,7 +79,8 @@ Click the `+Add` menu item, followed by `Container images`.
 
 Firstly deploy the Mongo container using the following specification.
 
-Example
+
+
 | Configuration                        | Parameter                 |
 |--------------------------------------|---------------------------|
 | Image name from external registry    | `quay.io/lijcam/mongo:v1` |
