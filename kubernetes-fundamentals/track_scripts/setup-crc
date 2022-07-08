@@ -1,6 +1,8 @@
 #!/bin/bash
 set -x
 
+START_OPENSHIFT=true
+
 # setup vars
 export TERM=xterm-color
 export KUBECONFIG=/opt/kubeconfig
@@ -41,6 +43,10 @@ sed -i '/^search.*/a nameserver 10.88.0.8' /etc/resolv.conf
 
 # Set kubelet config.json
 echo "$PULLSECRET" | base64 -d | tee /var/lib/kubelet/config.json
+
+if [[ "${START_OPENSHIFT}" == "false" ]]; then
+    exit 0
+fi
 
 # start openshift
 systemctl start crc-dnsmasq.service
