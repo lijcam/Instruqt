@@ -1,3 +1,9 @@
 #!/bin/bash
 
 oc delete namespace team-pacman --wait=true
+
+# --wait=true doesn't seem to work
+# https://bugzilla.redhat.com/show_bug.cgi?id=1748648
+# current quick fix, wait 10 seconds.
+# proper solution to be implemented soon.
+sleep 10
