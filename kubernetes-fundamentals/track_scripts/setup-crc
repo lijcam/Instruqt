@@ -5,11 +5,6 @@ set -x
 export TERM=xterm-color
 export KUBECONFIG=/opt/kubeconfig
 
-# currently overwrite hostname with an hard-coded value
-# that will be used in the assignment.md
-# fix that once assignment.md can get access to $HOSTNAME, with a succesfull instruqt track push.
-export HOSTNAME="ocp"
-
 ENS4IP=$(ip -4 -o addr show ens4 | awk '{print $4}' | cut -d "/" -f 1)
 
 # set hostname
@@ -95,7 +90,7 @@ done
 for co in $(oc get co -oname)
 do
     # skip this one
-    if [ $co == "clusteroperator.config.openshift.io/machine-config" -o $co == "clusteroperator.config.openshift.ioopenshift-controller-manager" ]
+    if [ $co == "clusteroperator.config.openshift.io/machine-config" -o $co == "clusteroperator.config.openshift.io/openshift-controller-manager" ]
     then
       continue
     fi
@@ -154,7 +149,7 @@ oc patch -p '{"spec": {"host": "default-route-openshift-image-registry.'$HOSTNAM
 for co in $(oc get co -oname)
 do
     # skip this one
-    if [ $co == "clusteroperator.config.openshift.io/machine-config" -o $co == "clusteroperator.config.openshift.ioopenshift-controller-manager" ]
+    if [ $co == "clusteroperator.config.openshift.io/machine-config" -o $co == "clusteroperator.config.openshift.io/openshift-controller-manager" ]
     then
       continue
     fi
@@ -181,11 +176,23 @@ do
     done
 done
 
+
+### YOUR SETUP SCRIPT (E.G. INSTALL JDK, GO ETC) SHOULD GO HERE 
+# In this way we try to optimize the flow while we wait for oauth and routes to be finally OK
+# https://bugzilla.redhat.com/show_bug.cgi?id=2082539
+
+###
+
+until [[ `oc get routes -A | awk '!/^(NAME|openshift-ingress-canary)/{print$3}' |grep 5nvrm` ]]; do 
+    echo "Routes not patched yet, waiting 30 seconds..";
+    sleep 30;
+done
+
 # do twice since cluster operator rolls out continuously
 for co in $(oc get co -oname)
 do
     # skip this one
-    if [ $co == "clusteroperator.config.openshift.io/machine-config" -o $co == "clusteroperator.config.openshift.ioopenshift-controller-manager" ]
+    if [ $co == "clusteroperator.config.openshift.io/machine-config" -o $co == "clusteroperator.config.openshift.io/openshift-controller-manager" ]
     then
       continue
     fi
@@ -214,5 +221,3 @@ done
 
 date
 echo "### Boostrap END ###"
-
-
