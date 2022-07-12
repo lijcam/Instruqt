@@ -52,11 +52,10 @@ You now have all the information you need to deploy the Pacman application.
 
 When you first log in to OpenShift, you will be in the Administrators. Explore the interface to find the perspective toggle and switch to the Developer perspective.
 
-<details><summary>Can't find it? Here's a hint.</summary>
+Can't find it? Here's a hint.
 
 ![perspective-toggle](../assets/perspective-toggle.png)
 
-</details>
 
 ## Create the project
 
