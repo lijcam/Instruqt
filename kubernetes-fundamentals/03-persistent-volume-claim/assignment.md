@@ -136,7 +136,7 @@ Modify our pod template for mongo to include the `volume`, and a `volumeMount` f
 Once you have done the required modifications, you can re-apply the mongo Deployment with:
 
 ```
-oc apply -f /root/pacman-team/mongo-deployment.yaml
+oc apply -f /root/team-pacman/mongo-deployment.yaml
 ```
 
 ## Test your changes
