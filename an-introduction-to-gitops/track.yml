@@ -1,15 +1,18 @@
 slug: an-introduction-to-gitops
 type: track
 title: An introduction to GitOps
-teaser: A short description of the track.
+teaser: What is GitOps and why does it go hand in hand with Kubernetes?
 description: |-
   A long description of the track.
 
   You can use any GitHub flavoured markdown.
-icon: https://storage.googleapis.com/instruqt-frontend/img/tracks/default.png
-tags: []
+icon: https://logodix.com/logo/1910931.png
+level: beginner
+tags:
+- openshift
 owner: openshift
 developers:
 - mparkins@redhat.com
-private: false
+- liacampb@redhat.com
+private: true
 published: false
