@@ -1,4 +1,5 @@
 slug: an-introduction-to-gitops
+id: 3mxjysxnmggh
 type: track
 title: An introduction to GitOps
 teaser: What is GitOps and why does it go hand in hand with Kubernetes?
@@ -16,3 +17,4 @@ developers:
 - liacampb@redhat.com
 private: true
 published: false
+checksum: "18436376315594764740"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script runs when the platform setup the challenge.
 #
@@ -6,6 +6,99 @@
 # script. If the exit code is not 0, the script fails. 
 #
 
-echo "This is the setup script"
+echo "Setting up the challenge..."
+
+export NAMESPACE=pacman-app
+export GIT_REPO_URL=TODO
+
+echo "Create the $NAMESPACE namespace"
+oc new-project $NAMESPACE
+
+echo "Install the ArgoCD operator"
+cat << EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-gitops-operator
+  namespace: openshift-operators
+spec:
+  name: openshift-gitops-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF
+
+# We need the above to complete before deploying an Argo instance.
+# Let's set up a simple git server while we wait.
+echo "Install a local git server"
+useradd git
+GIT_TEMP_DIR=$(mktemp -d)
+pushd $GIT_TEMP_DIR
+curl -O https://dl.gogs.io/0.12.9/gogs_0.12.9_linux_amd64.tar.gz
+tar xzf gogs_0.12.9_linux_amd64.tar.gz
+cp -a gogs /home/git/
+chown -R git:git /home/git/gogs
+cp gogs/scripts/systemd/gogs.service /etc/systemd/system/
+chown root:root /etc/systemd/system/gogs.service
+systemctl daemon-reload
+systemctl start gogs.service
+# TODO
+## - Load initial config
+## - Setup first repo
+## - Potential issue configuring via API - seems to need manual config (user add and access token first)
+## - May need to explore Gitea instead
+popd
+
+echo "Create an ArgoCD instance"
+cat << EOF | oc apply -n $NAMESPACE -f -
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  labels:
+    app: argocd
+  name: argocd
+spec:
+  server:
+    route:
+      enabled: true
+EOF
+
+echo "Create an ArgoCD project"
+cat << EOF | oc apply -n $NAMESPACE -f -
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: petclinic
+spec:
+  destinations:
+  - name: in-cluster
+    namespace: $NAMESPACE
+    server: https://kubernetes.default.svc
+  sourceRepos:
+  - $GIT_REPO_URL
+EOF
+
+echo "Create an ArgoCD application"
+cat << EOF | oc apply -n $NAMESPACE -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: petclinic
+spec:
+  destination:
+    name: in-cluster
+    namespace: $NAMESPACE
+  project: petclinic
+  source:
+    path: ./
+    repoURL: $GIT_REPO_URL
+  syncPolicy:
+    automated:
+      selfHeal: true
+EOF
+
+
+# TODO
+## - Download pacman manifests
+## - Upload to git repo
 
 exit 0
