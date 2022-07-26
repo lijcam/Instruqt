@@ -1,4 +1,8 @@
 #!/bin/bash
+set -x
+
+# Clean up previous challenge.
+oc delete namespace team-pacman --wait=true
 
 # Challenge setup
 

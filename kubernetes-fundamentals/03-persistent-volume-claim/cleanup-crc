@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 PROJECT_PATH="/root/team-pacman"
 rm -rf $PROJECT_PATH

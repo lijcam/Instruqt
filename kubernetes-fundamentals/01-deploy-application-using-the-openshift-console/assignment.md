@@ -11,7 +11,6 @@ notes:
     One final sweep of the inbox before knock off, a last-minute request comes from one of the application teams.
 
       > **From:** pacman-development-team \
-      > **Sent:** Friday, 18 of March 2022 4:37 PM \
       > **To:** deployment-engineering \
       > **Subject:** Urgent deployment - Pacman app
 
@@ -31,7 +30,7 @@ notes:
 tabs:
 - title: OpenShift Console
   type: website
-  url: https://console-openshift-console.crc-dzk9v-master-0.crc.${_SANDBOX_ID}.instruqt.io
+  url: https://console-openshift-console.crc-5nvrm-master-0.crc.${_SANDBOX_ID}.instruqt.io
   new_window: true
 - title: Shell
   type: terminal
@@ -53,11 +52,10 @@ You now have all the information you need to deploy the Pacman application.
 
 When you first log in to OpenShift, you will be in the Administrators. Explore the interface to find the perspective toggle and switch to the Developer perspective.
 
-<details><summary>Can't find it? Here's a hint.</summary>
+Can't find it? Here's a hint.
 
 ![perspective-toggle](../assets/perspective-toggle.png)
 
-</details>
 
 ## Create the project
 
@@ -80,7 +78,8 @@ Click the `+Add` menu item, followed by `Container images`.
 
 Firstly deploy the Mongo container using the following specification.
 
-Example
+
+
 | Configuration                        | Parameter                 |
 |--------------------------------------|---------------------------|
 | Image name from external registry    | `quay.io/lijcam/mongo:v1` |

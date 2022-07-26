@@ -1,6 +1,5 @@
 #!/bin/bash
 
-PROJECT_PATH="/root/team-pacman"
-rm -rf $PROJECT_PATH
-
-oc delete namespace team-pacman --wait=true
+# Instruqt runs cleanup and setup scripts in parallel. 
+# These tasks have moved to the next challenge setup so blocking call are respected.
+# https://instruqt.slack.com/archives/CLGDKB0UU/p1657624989180079
