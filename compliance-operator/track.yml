@@ -1,0 +1,24 @@
+slug: compliance-operator
+type: track
+title: compliance-operator
+teaser: Learn to use the Red Hat OpenShift Compliance Operator to scan for and remediate
+  security issues.
+description: "Security and compliance are critical requirements for any organisation
+  looking to adopt a secure platform to build and run operations. Fortunately for
+  Red Hat OpenShift users, security is a core focus of the platform, and is built-in
+  in many ways. \n\nThe Compliance Operator is one way we build security into the
+  OpenShift platform. The Compliance Operator allows organisations to scan clusters
+  for security issues; report on those issues, using NIST standard formats; and remediate
+  security and compliance issues using a Kubernetes-native approach.\n\nThis lab will
+  take you through:\n  - Installing the Compliance Operator on Red Hat OpenShift clusters\n
+  \ - Scanning clusters for security and compliance issues\n  - Scheduling cluster
+  security and compliance scans\n  - Accessing security and compliance results and
+  creating reports\n  - Remediating security and compliance issues using a Kubernetes-native
+  approach"
+icon: https://storage.googleapis.com/instruqt-frontend/img/tracks/default.png
+tags: []
+owner: openshift
+developers:
+- sboulden@redhat.com
+private: true
+published: false
