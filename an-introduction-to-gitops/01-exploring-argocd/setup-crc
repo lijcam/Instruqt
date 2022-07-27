@@ -31,21 +31,14 @@ EOF
 # Let's set up a simple git server while we wait.
 echo "Install a local git server"
 useradd git
-GIT_TEMP_DIR=$(mktemp -d)
-pushd $GIT_TEMP_DIR
-curl -O https://dl.gogs.io/0.12.9/gogs_0.12.9_linux_amd64.tar.gz
-tar xzf gogs_0.12.9_linux_amd64.tar.gz
-cp -a gogs /home/git/
-chown -R git:git /home/git/gogs
+pushd /home/git
+curl -O https://raw.githubusercontent.com/lijcam/Instruqt/3-showcase-openshift-gitops/an-introduction-to-gitops/01-exploring-argocd/content/gogs.tar.gz
+tar xzf gogs.tar.gz
+chown -R git:git gogs
 cp gogs/scripts/systemd/gogs.service /etc/systemd/system/
 chown root:root /etc/systemd/system/gogs.service
 systemctl daemon-reload
 systemctl start gogs.service
-# TODO
-## - Load initial config
-## - Setup first repo
-## - Potential issue configuring via API - seems to need manual config (user add and access token first)
-## - May need to explore Gitea instead
 popd
 
 echo "Create an ArgoCD instance"
@@ -95,10 +88,5 @@ spec:
     automated:
       selfHeal: true
 EOF
-
-
-# TODO
-## - Download pacman manifests
-## - Upload to git repo
 
 exit 0
