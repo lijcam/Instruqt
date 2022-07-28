@@ -1,6 +1,6 @@
 ---
 slug: exploring-argocd
-id: xo58gxbztrpy
+id: umudg8xpfbur
 type: challenge
 title: Exploring ArgoCD
 teaser: A short description of the challenge.
