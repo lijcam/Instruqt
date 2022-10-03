@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mysql
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: mysql-app
+  namespace: mysql
+spec:
+  type: Git
+  pathname: https://github.com/waynedovey/rhacm-demo
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: prod-clusters
+  namespace: mysql
+spec:
+  clusterConditions:
+    - type: ManagedClusterConditionAvailable
+      status: "True"
+  clusterSelector:
+    matchLabels:
+      environment: prod
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  name: mysql-app
+  namespace: mysql
+  labels:
+    app: mysql-app
+  annotations:
+    apps.open-cluster-management.io/github-path: mysql-resources
+    apps.open-cluster-management.io/git-branch: main
+spec:
+  channel: mysql/mysql-app
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: prod-clusters
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: mysql-app
+  namespace: mysql
+spec:
+  componentKinds:
+  - group: apps.open-cluster-management.io
+    kind: Subscription
+  descriptor: {}
+  selector:
+    matchExpressions:
+    - key: app
+      operator: In
+      values:
+      - mysql-app

@@ -1,0 +1,17 @@
+slug: rh-advanced-cluster-management
+id: zm1o6ssahux4
+title: Red Hat Advanced Cluster Management (CLI Guide)
+teaser: An introduction to Red Hat Advanced Cluster Management for Kubernetes using
+  the Command Line Interface (CLI)
+description: |-
+  Learn the basics of kubernetes cluster management.
+  ACM seeks to simplify the management of Kubernetes.
+  This is a CLI based learning guide, with the option to review the ACM UI.
+icon: https://logodix.com/logo/1910931.png
+tags: []
+owner: openshift
+developers:
+- wdovey@redhat.com
+private: true
+published: false
+checksum: "10514208517683404118"
