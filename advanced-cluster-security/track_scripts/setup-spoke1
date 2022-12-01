@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Sort out DNS
+crc=`nslookup crc |  awk -F': ' 'NR==6 { print $2 } '`
+
+systemctl stop systemd-resolved
+systemctl disable systemd-resolved
+systemctl mask systemd-resolved
+
+echo "$crc api.crc.testing" >> /etc/hosts
+echo "$crc oauth-openshift.apps-crc.testing" >> /etc/hosts
+
+cat << EOF > /etc/resolv.conf
+nameserver $crc
+nameserver 10.64.1.254
+nameserver 169.254.169.254
+search jhyalbml24r4.svc.cluster.local c.instruqt-prod.internal google.internal
+EOF
+
+nslookup api.crc.testing
+
+# Wait for the Instruqt host bootstrap to finish
+until [ -f /opt/instruqt/bootstrap/host-bootstrap-completed ]
+do
+    sleep 1
+done
+
+# Wait for the Kubernetes API server to become available
+while ! curl --fail --output /dev/null http://localhost:8001/api 
+do
+    sleep 1 
+done
+
+# Enable bash completion for kubectl
+echo "source /usr/share/bash-completion/bash_completion" >> /root/.bashrc
+echo "complete -F __start_kubectl k" >> /root/.bashrc
+
+# Sort out DNS part 2
+sed -i 's/\/etc\/resolv.conf/'$crc'/g' /var/lib/rancher/k3s/server/manifests/coredns.yaml
+kubectl get -n kube-system cm/coredns -o yaml > /root/coredns.yaml 
+sed -i 's/\/etc\/resolv.conf/'$crc'/g' /root/coredns.yaml
+kubectl replace -n kube-system -f /root/coredns.yaml 
+kubectl delete pod $(kubectl get pods -A | grep coredns | awk '{print $2}') -n kube-system
