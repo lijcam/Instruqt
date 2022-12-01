@@ -1,0 +1,16 @@
+slug: rh-advanced-cluster-security
+id: bhhgvyfoweiy
+title: Red Hat Advanced Cluster Security
+teaser: An introduction to Red Hat Advanced Cluster Security for Kubernetes
+description: |-
+  Learn the basics of kubernetes cluster security.
+  RHACS seeks to simplify the security of Kubernetes.
+  This is a UI based learning guide.
+icon: https://logodix.com/logo/1910931.png
+tags: []
+owner: openshift
+developers:
+- wdovey@redhat.com
+private: true
+published: false
+checksum: "17998293018643402852"
